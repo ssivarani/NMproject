@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Grievance Portal</title>
+    <style>
+        :root { --primary: #1e293b; --accent: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #334155; --border: #e2e8f0; --success: #10b981; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 650px; padding: 40px 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .card { background: var(--card); padding: 35px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; color: var(--primary); }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 15px; box-sizing: border-box; }
+        button { width: 100%; background-color: var(--accent); color: white; padding: 14px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        button:hover { background-color: #1d4ed8; }
+        
+        /* Interactive Heading */
+        .complaint-list-title { 
+            font-size: 1.2rem; 
+            color: var(--primary); 
+            border-bottom: 2px solid var(--border); 
+            padding-bottom: 10px; 
+            margin-bottom: 20px; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            transition: color 0.2s;
+        }
+        .complaint-list-title:hover { color: var(--accent); }
+        .complaint-list-title::after { content: '▼'; font-size: 0.8rem; transition: transform 0.3s; }
+        .complaint-list-title.active::after { transform: rotate(180deg); }
+
+        /* Hidden by default */
+        #complaintList { 
+            display: none; 
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .complaint-card { background: white; padding: 20px; border-radius: 8px; border-left: 5px solid var(--accent); margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); position: relative; }
+        .status-tag { position: absolute; top: 20px; right: 20px; font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-resolved { background: #dcfce7; color: #166534; }
+        .admin-reply { margin-top: 15px; padding: 10px; background: #f1f5f9; border-radius: 6px; font-size: 0.85rem; border-left: 3px solid var(--success); }
+        .footer { text-align: center; margin-top: 30px; }
+        .logout-link { color: #94a3b8; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Student Support Dashboard</h1>
+        <p>Official Grievance Submission Portal</p>
+    </div>
+
+    <div class="card">
+        <form id="complaintForm">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="username" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label>Academic Department</label>
+                <input type="text" id="department" list="deptOptions" placeholder="Select Department..." required>
+                <datalist id="deptOptions">
+                    <option value="Computer Science and Engineering">
+                    <option value="Information Technology">
+                    <option value="Mechanical Engineering">
+                    <option value="Civil Engineering">
+                    <option value="Electronics and Communication Engineering">
+                    <option value="Electrical and Electronics Engineering">
+                </datalist>
+            </div>
+            <div class="form-group">
+                <label>Complaint Description</label>
+                <textarea id="complaint" rows="4" placeholder="Describe your concern..." required></textarea>
+            </div>
+            <button type="submit">Submit Official Complaint</button>
+        </form>
+    </div>
+
+    <h3 class="complaint-list-title" id="toggleSubmissions">Recent Submissions</h3>
+    
+    <div id="complaintList"></div>
+
+    <div class="footer"><a href="login.html" class="logout-link">Exit Session</a></div>
+</div>
+
+<script>
+    // Toggle function for the submissions list
+    document.getElementById('toggleSubmissions').addEventListener('click', function() {
+        const list = document.getElementById('complaintList');
+        const isVisible = list.style.display === 'block';
+        
+        list.style.display = isVisible ? 'none' : 'block';
+        this.classList.toggle('active');
+    });
+
+    function loadUserComplaints() {
+        const complaints = JSON.parse(localStorage.getItem('allComplaints')) || [];
+        const list = document.getElementById('complaintList');
+        list.innerHTML = '';
+
+        if (complaints.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:#94a3b8;">No records found.</p>';
+            return;
+        }
+
+        complaints.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'complaint-card';
+            const statusClass = item.status === 'Resolved' ? 'status-resolved' : 'status-pending';
+            
+            card.innerHTML = `
+                <span class="status-tag ${statusClass}">${item.status}</span>
+                <div style="font-size: 0.75rem; color: var(--accent); font-weight: 700;">${item.dept}</div>
+                <div style="font-weight: 600; margin: 5px 0;">${item.name}</div>
+                <p style="margin: 0; font-size: 0.9rem; color: #475569;">${item.msg}</p>
+                ${item.adminNote ? `<div class="admin-reply"><strong>Admin Response:</strong> ${item.adminNote}</div>` : ''}
+            `;
+            list.prepend(card);
+        });
+    }
+
+    document.getElementById('complaintForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newComplaint = {
+            name: document.getElementById('username').value,
+            dept: document.getElementById('department').value,
+            msg: document.getElementById('complaint').value,
+            status: 'Pending',
+            adminNote: '',
+            date: new Date().toLocaleDateString()
+        };
+
+        const complaints = JSON.parse(localStorage.getItem('allComplaints')) || [];
+        complaints.push(newComplaint);
+        localStorage.setItem('allComplaints', JSON.stringify(complaints));
+        
+        this.reset();
+        loadUserComplaints();
+
+        // Optional: Open the list automatically after submitting
+        const list = document.getElementById('complaintList');
+        list.style.display = 'block';
+        document.getElementById('toggleSubmissions').classList.add('active');
+    });
+
+    window.onload = loadUserComplaints;
+</script>
+</body>
+</html>

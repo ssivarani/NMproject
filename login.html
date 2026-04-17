@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Complaint Management System</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1d2671, #c33764);
+}
+
+.login-card {
+    width: 550px;              /* increased width */
+    background: white;
+    border-radius: 25px;
+    padding: 50px 40px;        /* increased padding */
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.college-logo {
+    width: 190px;              /* increased circle size */
+    height: 190px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 30px auto;
+    border-radius: 50%;
+    border: 5px solid #1d2671;
+    padding: 5px;
+    background: white;
+}
+
+h1 {
+    font-size: 32px;           /* slightly bigger heading */
+    color: #1d2671;
+    margin-bottom: 35px;
+}
+
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+button {
+    width: 100%;
+    padding: 16px;
+    font-size: 19px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #1d2671;
+    color: white;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #c33764;
+    transform: scale(1.02);
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-card">
+    <img src="logo.png" alt="College Logo" class="college-logo">
+
+    <h1>Online Complaint Management System</h1>
+
+    <div class="btn-group">
+        <a href="user.html"><button>User Login</button></a>
+        <a href="admin-login.html"><button>Admin Login</button></a>
+    </div>
+</div>
+
+</body>
+</html>
